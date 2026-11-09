@@ -38,7 +38,35 @@ jobs:
       - name: Build MSI
         run: wix build installer.wxs -o dist\Mnotas-x64.msi
 
-      - name: Generate SHA256SUMS
+      # ---------- Firma digital (opcional) ----------
+      # Para activar la firma, crea en el repositorio los secrets:
+      #   CODE_SIGN_CERT      -> certificado PFX en base64 (certutil -encode cert.pfx cert.b64)
+      #   CODE_SIGN_PASSWORD  -> contraseña del PFX
+      # Con un certificado EV, SmartScreen deja de marcar el ejecutable como desconocido.
+      - name: Locate signtool
+        id: signtool
+        run: |
+          $st = Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $st) { Write-Host "signtool no encontrado"; exit 1 }
+          echo "path=$st" >> $env:GITHUB_OUTPUT
+          Write-Host "signtool: $st"
+
+      - name: Sign binaries (if cert provided)
+        if: ${{ secrets.CODE_SIGN_CERT != '' && secrets.CODE_SIGN_PASSWORD != '' }}
+        env:
+          CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT }}
+          CODE_SIGN_PASSWORD: ${{ secrets.CODE_SIGN_PASSWORD }}
+        run: |
+          $certPath = "$env:RUNNER_TEMP\codesign.pfx"
+          [System.IO.File]::WriteAllBytes($certPath, [System.Convert]::FromBase64String($env:CODE_SIGN_CERT))
+          $st = "${{ steps.signtool.outputs.path }}"
+          & $st sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /f $certPath /p $env:CODE_SIGN_PASSWORD "dist\portable\Mnotas.exe"
+          & $st sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /f $certPath /p $env:CODE_SIGN_PASSWORD "dist\Mnotas-x64.msi"
+          & $st verify /pa "dist\portable\Mnotas.exe"
+          & $st verify /pa "dist\Mnotas-x64.msi"
+          Remove-Item $certPath -Force
+
+      - name: Generate SHA256SUMS (after signing)
         run: |
           $files = @("dist\portable\Mnotas.exe", "dist\Mnotas-x64.msi")
           $lines = @()
