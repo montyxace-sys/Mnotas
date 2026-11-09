@@ -3,7 +3,7 @@
 
   <Package Name="Mnotas"
            Manufacturer="MSoft"
-           Version="0.2.1"
+           Version="0.2.2"
            UpgradeCode="B7C3A1D2-4E5F-6789-ABCD-EF0123456789"
            Scope="perMachine"
            Compressed="yes"
