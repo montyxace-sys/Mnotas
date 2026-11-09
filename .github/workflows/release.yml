@@ -19,7 +19,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
       - name: Install WiX
         run: dotnet tool install --global wix --version 5.0.2
@@ -31,6 +33,7 @@ jobs:
         run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist\portable
 
       - name: Prepare MSI publish
+        shell: pwsh
         run: |
           New-Item -ItemType Directory -Path publish -Force | Out-Null
           Copy-Item dist\portable\Mnotas.exe publish\Mnotas.exe
@@ -45,13 +48,21 @@ jobs:
       # Con un certificado EV, SmartScreen deja de marcar el ejecutable como desconocido.
       - name: Locate signtool
         id: signtool
+        shell: pwsh
         run: |
+          # Que falte signtool no puede romper un release: solo impide firmar.
           $st = Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName
-          if (-not $st) { Write-Host "signtool no encontrado"; exit 1 }
-          echo "path=$st" >> $env:GITHUB_OUTPUT
-          Write-Host "signtool: $st"
+          if (-not $st) {
+            Write-Host "::warning::signtool no encontrado: el release se publicara sin firma."
+            "path=" >> $env:GITHUB_OUTPUT
+          } else {
+            "path=$st" >> $env:GITHUB_OUTPUT
+            Write-Host "signtool: $st"
+          }
 
       - name: Sign binaries (if cert provided)
+        if: ${{ steps.signtool.outputs.path != '' }}
+        shell: pwsh
         env:
           CODE_SIGN_CERT: ${{ secrets.CODE_SIGN_CERT }}
           CODE_SIGN_PASSWORD: ${{ secrets.CODE_SIGN_PASSWORD }}
@@ -63,13 +74,15 @@ jobs:
           $certPath = "$env:RUNNER_TEMP\codesign.pfx"
           [System.IO.File]::WriteAllBytes($certPath, [System.Convert]::FromBase64String($env:CODE_SIGN_CERT))
           $st = "${{ steps.signtool.outputs.path }}"
-          & $st sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /f $certPath /p $env:CODE_SIGN_PASSWORD "dist\portable\Mnotas.exe"
-          & $st sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /f $certPath /p $env:CODE_SIGN_PASSWORD "dist\Mnotas-x64.msi"
-          & $st verify /pa "dist\portable\Mnotas.exe"
-          & $st verify /pa "dist\Mnotas-x64.msi"
+          foreach ($file in @("dist\portable\Mnotas.exe", "dist\Mnotas-x64.msi")) {
+            & $st sign /fd sha256 /tr http://timestamp.digicert.com /td sha256 /f $certPath /p $env:CODE_SIGN_PASSWORD $file
+            if ($LASTEXITCODE -ne 0) { throw "La firma de $file fallo con codigo $LASTEXITCODE." }
+            & $st verify /pa $file
+          }
           Remove-Item $certPath -Force
 
       - name: Generate SHA256SUMS (after signing)
+        shell: pwsh
         run: |
           $files = @("dist\portable\Mnotas.exe", "dist\Mnotas-x64.msi")
           $lines = @()
@@ -89,7 +102,11 @@ jobs:
             dist/Mnotas-x64.msi
             dist/SHA256SUMS.txt
 
+      # workflow_dispatch no tiene tag: sin esta condición, action-gh-release falla
+      # porque no sabe a qué release apuntar. El resto del job sigue sirviendo de
+      # comprobación manual y deja los binarios como artefacto.
       - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: |
@@ -97,3 +114,4 @@ jobs:
             dist/Mnotas-x64.msi
             dist/SHA256SUMS.txt
           generate_release_notes: true
+          fail_on_unmatched_files: false
