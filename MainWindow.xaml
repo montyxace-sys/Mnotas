@@ -4,7 +4,6 @@
         xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
         Title="Mnotas" Height="720" Width="1100"
         WindowStartupLocation="CenterScreen"
-        Icon="Mnotas.ico"
         Background="{DynamicResource BgBrush}"
         Foreground="{DynamicResource FgBrush}">
     <Grid>
