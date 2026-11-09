@@ -72,6 +72,11 @@
                 <MenuItem Header="SQL" Click="Lang_Click" Tag="SQL"/>
                 <MenuItem Header="Markdown" Click="Lang_Click" Tag="Markdown"/>
             </MenuItem>
+            <MenuItem Header="Ayuda">
+                <MenuItem Header="Buscar actualizaciones" Click="CheckUpdates_Click"/>
+                <Separator/>
+                <MenuItem Header="Acerca de Mnotas" Click="About_Click"/>
+            </MenuItem>
         </Menu>
 
         <!-- Tabs + Editor -->
@@ -88,6 +93,9 @@
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right" Margin="12,0,0,0">
                 <TextBlock x:Name="EncodingText" Text="UTF-8"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right" Margin="12,0,0,0">
+                <TextBlock Text="v0.2.1  © 2026 Diseñado por MSoft — msoft.com.es" FontSize="11" Foreground="{DynamicResource FgBrush}" Opacity="0.6"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

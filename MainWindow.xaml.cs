@@ -22,6 +22,15 @@ namespace Mnotas
             InitializeComponent();
             NewTab();
             UpdateStatus();
+            // Auto-check for updates on startup (background)
+            _ = Task.Run(async () =>
+            {
+                var info = await UpdateChecker.CheckAsync();
+                if (info != null && info.IsUpdateAvailable)
+                {
+                    Dispatcher.Invoke(() => UpdateChecker.ShowUpdateDialog(info, this));
+                }
+            });
         }
 
         private TextEditor CurrentEditor
@@ -261,6 +270,32 @@ namespace Mnotas
         }
 
         private void Tabs_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateStatus();
+
+        private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+        {
+            StatusText.Text = "Buscando actualizaciones...";
+            var info = await UpdateChecker.CheckAsync();
+            if (info == null)
+            {
+                MessageBox.Show("No se pudo comprobar. Verifica tu conexión.", "Actualizaciones", MessageBoxButton.OK, MessageBoxImage.Warning);
+                StatusText.Text = "Listo";
+                return;
+            }
+            if (info.IsUpdateAvailable)
+            {
+                UpdateChecker.ShowUpdateDialog(info, this);
+            }
+            else
+            {
+                MessageBox.Show($"Ya tienes la última versión ({UpdateChecker.CurrentVersion}).", "Actualizaciones", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            StatusText.Text = "Listo";
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show($"Mnotas v{UpdateChecker.CurrentVersion}\nEditor de texto moderno\n\n© 2026 Diseñado por MSoft\nmsoft.com.es", "Acerca de Mnotas", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
         private void Editor_KeyDown(object sender, KeyEventArgs e)
         {
