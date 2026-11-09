@@ -1,0 +1,15 @@
+bin/
+obj/
+dist/
+publish/
+*.user
+*.suo
+.vs/
+.idea/
+*.pdb
+*.wixpdb
+*.wixobj
+gen_icon.py
+
+# Keep the icon in the repo
+!Mnotas.ico

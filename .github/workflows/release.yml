@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install WiX
+        run: dotnet tool install --global wix --version 5.0.2
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build portable (single-file)
+        run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist\portable
+
+      - name: Prepare MSI publish
+        run: |
+          New-Item -ItemType Directory -Path publish -Force | Out-Null
+          Copy-Item dist\portable\Mnotas.exe publish\Mnotas.exe
+
+      - name: Build MSI
+        run: wix build installer.wxs -o dist\Mnotas-x64.msi
+
+      - name: Generate SHA256SUMS
+        run: |
+          $files = @("dist\portable\Mnotas.exe", "dist\Mnotas-x64.msi")
+          $lines = @()
+          foreach ($f in $files) {
+            $hash = (Get-FileHash $f -Algorithm SHA256).Hash.ToLower()
+            $name = Split-Path $f -Leaf
+            $lines += "$hash  $name"
+          }
+          $lines | Out-File -FilePath dist\SHA256SUMS.txt -Encoding ascii
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mnotas
+          path: |
+            dist/portable/Mnotas.exe
+            dist/Mnotas-x64.msi
+            dist/SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/portable/Mnotas.exe
+            dist/Mnotas-x64.msi
+            dist/SHA256SUMS.txt
+          generate_release_notes: true

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Package Name="Mnotas"
+           Manufacturer="MSoft"
+           Version="0.1.0"
+           UpgradeCode="B7C3A1D2-4E5F-6789-ABCD-EF0123456789"
+           Scope="perMachine"
+           Compressed="yes"
+           Language="3082">
+
+    <MajorUpgrade DowngradeErrorMessage="Ya hay una versi��n mǭs reciente de Mnotas instalada." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPHELPLINK" Value="https://msoft.com.es" />
+    <Property Id="ARPURLINFOABOUT" Value="https://msoft.com.es" />
+    <Property Id="ARPCONTACT" Value="MSoft" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+
+    <Icon Id="AppIcon" SourceFile="Mnotas.ico" />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="Mnotas" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="MSoftMenuFolder" Name="MSoft" />
+    </StandardDirectory>
+
+    <Feature Id="MainFeature" Title="Mnotas" Level="1">
+      <ComponentRef Id="MainExecutable" />
+    </Feature>
+
+  </Package>
+
+  <Fragment>
+    <Component Id="MainExecutable" Directory="INSTALLFOLDER" Guid="*">
+      <File Id="MnotasExe"
+            Source="publish\Mnotas.exe"
+            KeyPath="yes" />
+
+      <Shortcut Id="StartMenuShortcut"
+                Directory="MSoftMenuFolder"
+                Name="Mnotas"
+                Description="Editor de texto moderno con resaltado de sintaxis"
+                Target="[INSTALLFOLDER]Mnotas.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon" />
+
+      <Shortcut Id="DesktopShortcut"
+                Directory="DesktopFolder"
+                Name="Mnotas"
+                Description="Editor de texto moderno con resaltado de sintaxis"
+                Target="[INSTALLFOLDER]Mnotas.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="AppIcon" />
+
+      <RemoveFolder Id="RemoveMSoftMenuFolder" Directory="MSoftMenuFolder" On="uninstall" />
+    </Component>
+  </Fragment>
+
+</Wix>
