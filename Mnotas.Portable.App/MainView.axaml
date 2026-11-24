@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Mnotas.Portable.App.MainView"
+             Background="#FFFFFF">
+  <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="14">
+
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+      <TextBlock Text="Mnotas" FontSize="20" FontWeight="SemiBold" Foreground="#1D1F20" />
+      <TextBlock Text="editor portable · duplicar línea con Ctrl+D" FontSize="12"
+                 Foreground="#6B7688" VerticalAlignment="Bottom" Margin="0,0,0,3" />
+    </StackPanel>
+
+    <Border Grid.Row="1" Background="#FFFFFF" CornerRadius="10" Padding="8" Margin="0,10,0,0"
+            BorderBrush="#EDEDED" BorderThickness="1">
+      <DockPanel>
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <Button Content="Nuevo" Click="New_Click" Padding="12,6" />
+          <Button Content="Abrir" Click="Open_Click" Padding="12,6" />
+          <Button Content="Guardar" Click="Save_Click" Padding="12,6" />
+          <Button Content="Duplicar línea" ToolTip.Tip="Ctrl+D" Click="Duplicate_Click"
+                  Padding="12,6" Background="#FFF6C549" Foreground="#1D1F20" />
+        </StackPanel>
+        <TextBlock x:Name="StatsText" Text="1 línea, 0 palabras" DockPanel.Dock="Right"
+                   Foreground="#6B7688" FontSize="12" VerticalAlignment="Center" />
+        <TextBlock x:Name="StatusText" Text="Listo" TextWrapping="Wrap" Margin="12,0"
+                   Foreground="#6B7688" FontSize="12" VerticalAlignment="Center" />
+      </DockPanel>
+    </Border>
+
+    <TextBox Grid.Row="2" x:Name="Editor" AcceptsReturn="True" TextWrapping="Wrap"
+             FontFamily="Consolas" FontSize="14" Margin="0,10,0,0"
+             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+             KeyDown="Editor_KeyDown" Watermark="Escribe aquí tus notas…" />
+
+    <DockPanel Grid.Row="3" Margin="0,8,0,0">
+      <TextBlock Text="v1.1.0 · © 2026 MSoft" DockPanel.Dock="Right" FontSize="11"
+                 Foreground="#9AA4B5" VerticalAlignment="Center" />
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <TextBlock Text="¿Te resulta útil? Apoya Mnotas:" FontSize="11" Foreground="#6B7688"
+                   VerticalAlignment="Center" />
+        <Button Content="PayPal" Tag="https://paypal.me/MsoftGenuino" Click="Donate_Click"
+                Padding="0" FontSize="11" Background="Transparent" Foreground="#E6B333"
+                BorderThickness="0" Cursor="Hand" />
+        <TextBlock Text="·" FontSize="11" Foreground="#6B7688" VerticalAlignment="Center" />
+        <Button Content="Liberapay" Tag="https://liberapay.com/Msoft/donate" Click="Donate_Click"
+                Padding="0" FontSize="11" Background="Transparent" Foreground="#E6B333"
+                BorderThickness="0" Cursor="Hand" />
+      </StackPanel>
+    </DockPanel>
+
+  </Grid>
+</UserControl>

@@ -16,6 +16,12 @@
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}"/>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
     <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}"/>
+    <Color x:Key="DonateColor">#FFF6C549</Color>
+    <Color x:Key="DonateHoverColor">#FFE6B333</Color>
+    <Color x:Key="DonateWashColor">#FFFFF8E5</Color>
+    <SolidColorBrush x:Key="DonateBrush" Color="{StaticResource DonateColor}"/>
+    <SolidColorBrush x:Key="DonateHoverBrush" Color="{StaticResource DonateHoverColor}"/>
+    <SolidColorBrush x:Key="DonateWashBrush" Color="{StaticResource DonateWashColor}"/>
 
     <!-- Window -->
     <Style TargetType="Window">

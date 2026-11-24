@@ -9,13 +9,31 @@
     <ApplicationIcon>Mnotas.ico</ApplicationIcon>
     <AssemblyName>Mnotas</AssemblyName>
     <RootNamespace>Mnotas</RootNamespace>
-    <Version>0.2.1</Version>
-    <AssemblyVersion>0.2.1.0</AssemblyVersion>
-    <FileVersion>0.2.1.0</FileVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Resource Include="Mnotas.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="obj\**\*.cs" />
+    <Compile Remove="bin\**\*.cs" />
+    <Compile Remove="**\obj\**\*.cs" />
+    <Compile Remove="**\bin\**\*.cs" />
+    <Compile Remove="Core\**\*.cs" />
+    <Compile Remove="tests\**\*.cs" />
+    <Compile Remove="Mnotas.Cli\**\*.cs" />
+    <Compile Remove="Mnotas.Desktop\**\*.cs" />
+    <Compile Remove="Mnotas.Portable.App\**\*.cs" />
+    <Compile Remove="Mnotas.Android\**\*.cs" />
+    <Compile Remove="Mnotas.iOS\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="Core\Mnotas.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

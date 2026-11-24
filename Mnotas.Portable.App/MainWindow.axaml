@@ -1,0 +1,10 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Mnotas.Portable.App"
+        x:Class="Mnotas.Portable.App.MainWindow"
+        Title="Mnotas · editor portable"
+        Width="1000" Height="720"
+        MinWidth="560" MinHeight="420"
+        WindowStartupLocation="CenterScreen">
+  <local:MainView />
+</Window>

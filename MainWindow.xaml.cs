@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Search;
+using Mnotas.Core;
 
 namespace Mnotas
 {
@@ -31,6 +34,17 @@ namespace Mnotas
                     Dispatcher.Invoke(() => UpdateChecker.ShowUpdateDialog(info, this));
                 }
             });
+            Loaded += (_, _) =>
+            {
+                if (!DonationPrefs.ShouldShow()) return;
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
+                timer.Tick += (_, _) =>
+                {
+                    timer.Stop();
+                    new DonationDialog { Owner = this }.ShowDialog();
+                };
+                timer.Start();
+            };
         }
 
         private TextEditor CurrentEditor
@@ -173,6 +187,34 @@ namespace Mnotas
         private void Copy_Click(object sender, RoutedEventArgs e) => CurrentEditor?.Copy();
         private void Paste_Click(object sender, RoutedEventArgs e) => CurrentEditor?.Paste();
 
+        private void DuplicateLine_Click(object sender, RoutedEventArgs e)
+        {
+            var ed = CurrentEditor;
+            if (ed == null) return;
+            var result = TextOperations.DuplicateLine(ed.Text, ed.CaretOffset);
+            if (string.Equals(result.Text, ed.Text, StringComparison.Ordinal)) return;
+            ed.Document.Replace(0, ed.Text.Length, result.Text);
+            ed.CaretOffset = Math.Clamp(result.CaretOffset, 0, ed.Text.Length);
+            ed.Focus();
+            StatusText.Text = "Línea duplicada";
+            if (e != null) e.Handled = true;
+        }
+
+        private void DonateLink_RequestNavigate(object sender,
+            System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            }
+            catch (System.ComponentModel.Win32Exception)
+            {
+                Clipboard.SetText(e.Uri.AbsoluteUri);
+                StatusText.Text = $"Enlace copiado al portapapeles: {e.Uri.AbsoluteUri}";
+            }
+            e.Handled = true;
+        }
+
         private void Find_Click(object sender, RoutedEventArgs e)
         {
             var ed = CurrentEditor;
@@ -297,6 +339,12 @@ namespace Mnotas
             MessageBox.Show($"Mnotas v{UpdateChecker.CurrentVersion}\nEditor de texto moderno\n\n© 2026 Diseñado por MSoft\nmsoft.com.es", "Acerca de Mnotas", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        private void AiConfig_Click(object sender, RoutedEventArgs e)
+        {
+            var configWindow = new AiConfigWindow();
+            configWindow.ShowDialog();
+        }
+
         private void Editor_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
@@ -306,6 +354,7 @@ namespace Mnotas
                 else if (e.Key == Key.S) { Save_Click(null, null); e.Handled = true; }
                 else if (e.Key == Key.F) { Find_Click(null, null); e.Handled = true; }
                 else if (e.Key == Key.H) { Replace_Click(null, null); e.Handled = true; }
+                else if (e.Key == Key.D) { DuplicateLine_Click(null, null); e.Handled = true; }
                 else if (e.Key == Key.Add || e.Key == Key.OemPlus) { ZoomIn_Click(null, null); e.Handled = true; }
                 else if (e.Key == Key.Subtract || e.Key == Key.OemMinus) { ZoomOut_Click(null, null); e.Handled = true; }
             }

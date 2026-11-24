@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0-ios</TargetFramework>
+    <SupportedOSPlatformVersion>17.4</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Mnotas.iOS</RootNamespace>
+    <AssemblyName>Mnotas.Portable.iOS</AssemblyName>
+    <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <BundleIdentifier>es.msof.mnotas</BundleIdentifier>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.iOS" Version="11.3.23" />
+    <ProjectReference Include="..\Mnotas.Portable.App\Mnotas.Portable.App.csproj" />
+  </ItemGroup>
+
+</Project>

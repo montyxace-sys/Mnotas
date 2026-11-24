@@ -22,6 +22,7 @@
                     <Button Content="Nuevo" Click="New_Click" Margin="0,0,4,0"/>
                     <Button Content="Abrir" Click="Open_Click" Margin="0,0,4,0"/>
                     <Button Content="Guardar" Click="Save_Click" Margin="0,0,4,0"/>
+                    <Button Content="Duplicar línea" ToolTip="Duplica la línea actual (Ctrl+D)" Click="DuplicateLine_Click" Margin="0,0,4,0"/>
                     <Button Content="Buscar" Click="Find_Click"/>
                 </StackPanel>
             </Grid>
@@ -46,6 +47,8 @@
                 <MenuItem Header="Cortar" InputGestureText="Ctrl+X" Click="Cut_Click"/>
                 <MenuItem Header="Copiar" InputGestureText="Ctrl+C" Click="Copy_Click"/>
                 <MenuItem Header="Pegar" InputGestureText="Ctrl+V" Click="Paste_Click"/>
+                <Separator/>
+                <MenuItem Header="Duplicar línea" InputGestureText="Ctrl+D" Click="DuplicateLine_Click"/>
                 <Separator/>
                 <MenuItem Header="Buscar..." InputGestureText="Ctrl+F" Click="Find_Click"/>
                 <MenuItem Header="Reemplazar..." InputGestureText="Ctrl+H" Click="Replace_Click"/>
@@ -76,6 +79,8 @@
                 <MenuItem Header="Buscar actualizaciones" Click="CheckUpdates_Click"/>
                 <Separator/>
                 <MenuItem Header="Acerca de Mnotas" Click="About_Click"/>
+                <Separator/>
+                <MenuItem Header="Configurar IA" Click="AiConfig_Click"/>
             </MenuItem>
         </Menu>
 
@@ -95,7 +100,24 @@
                 <TextBlock x:Name="EncodingText" Text="UTF-8"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right" Margin="12,0,0,0">
-                <TextBlock Text="v0.2.1  © 2026 Diseñado por MSoft — msoft.com.es" FontSize="11" Foreground="{DynamicResource FgBrush}" Opacity="0.6"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="¿Te ayuda Mnotas? Apoya el proyecto: " FontSize="11"
+                               Foreground="{DynamicResource FgBrush}" Opacity="0.7" VerticalAlignment="Center"/>
+                    <TextBlock FontSize="11" VerticalAlignment="Center">
+                        <Hyperlink NavigateUri="https://paypal.me/MsoftGenuino" RequestNavigate="DonateLink_RequestNavigate">
+                            <TextBlock Text="PayPal" Foreground="{DynamicResource DonateHoverBrush}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Text=" · " FontSize="11" Foreground="{DynamicResource FgBrush}" Opacity="0.6"
+                               VerticalAlignment="Center"/>
+                    <TextBlock FontSize="11" VerticalAlignment="Center">
+                        <Hyperlink NavigateUri="https://liberapay.com/Msoft/donate" RequestNavigate="DonateLink_RequestNavigate">
+                            <TextBlock Text="Liberapay" Foreground="{DynamicResource DonateHoverBrush}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                    <TextBlock Text="    v1.1.0  © 2026 Diseñado por MSoft — msoft.com.es" FontSize="11"
+                               Foreground="{DynamicResource FgBrush}" Opacity="0.6" VerticalAlignment="Center"/>
+                </StackPanel>
             </StatusBarItem>
         </StatusBar>
     </Grid>
